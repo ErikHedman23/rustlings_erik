@@ -18,12 +18,21 @@
 //
 // Execute `rustlings hint box1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+use crate::List::{Cons, Nil};
 
 #[derive(PartialEq, Debug)]
 pub enum List {
-    Cons(i32, List),
+    Cons(i32, Box<List>),
     Nil,
+}
+
+impl List {
+    pub fn cons_len(&self) -> usize {
+        match self {
+            Cons(_, next) => 1 + next.cons_len(),
+            Nil => 0,
+        }
+    }
 }
 
 fn main() {
@@ -32,14 +41,34 @@ fn main() {
         "This is a non-empty cons list: {:?}",
         create_non_empty_list()
     );
+
+    let user_input: i32 = 32;
+
+    println!(
+        "This is a user inputted cons list: {:?}",
+        create_user_input_cons_list(user_input)
+    )
 }
 
 pub fn create_empty_list() -> List {
-    todo!()
+    return Nil;
 }
 
 pub fn create_non_empty_list() -> List {
-    todo!()
+    return Cons(1, Box::new(Cons(2, Box::new(Nil))));
+}
+pub fn create_user_input_cons_list(n: i32) -> List {
+    if n < 1 {
+        return Nil;
+    }
+
+    let mut list = Nil;
+
+    for i in (1..=n).rev() {
+        list = Cons(i, Box::new(list));
+    }
+
+    return list;
 }
 
 #[cfg(test)]
@@ -54,5 +83,12 @@ mod tests {
     #[test]
     fn test_create_non_empty_list() {
         assert_ne!(create_empty_list(), create_non_empty_list())
+    }
+
+    #[test]
+    fn test_create_user_inputted_cons_list() {
+        let input: i32 = 32;
+        let list = create_user_input_cons_list(input);
+        assert_eq!(list.cons_len(), input as usize);
     }
 }
